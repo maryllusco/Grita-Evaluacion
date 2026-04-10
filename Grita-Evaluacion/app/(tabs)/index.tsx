@@ -8,6 +8,7 @@ export default function HomeScreen() {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
+  const sunAnim = useRef(new Animated.Value(0)).current;
 
   const colors = [
     "#090202", // vacío
@@ -93,7 +94,18 @@ export default function HomeScreen() {
       useNativeDriver: true,
     }).start();
 
-    // 🌈 animación fondo
+    // � animación sol (solo en el final)
+    if (stage === 6) {
+      sunAnim.setValue(0);
+      Animated.timing(sunAnim, {
+        toValue: 1,
+        duration: 2000,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: false,
+      }).start();
+    }
+
+    // �🌈 animación fondo
     Animated.timing(bgAnim, {
       toValue: stage,
       duration: 800,
@@ -109,6 +121,24 @@ export default function HomeScreen() {
 
   return (
     <Animated.View style={[styles.container, { backgroundColor }]}>
+      {stage === 6 && (
+        <Animated.View
+          style={[
+            styles.sun,
+            {
+              opacity: sunAnim,
+              transform: [
+                {
+                  scale: sunAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.5, 2],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      )}
       <Animated.Text
         style={[
           styles.text,
@@ -149,5 +179,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     fontWeight: "300",
     letterSpacing: 1,
+  },
+  sun: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: "#FFD700",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 50,
+    elevation: 20,
   },
 });
